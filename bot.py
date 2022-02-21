@@ -53,7 +53,10 @@ async def on_ready():
 
     # Set up the reaction channel
     channel = bot.get_channel(ROLE_CHANNEL)
-    await channel.purge(limit=10)
+    try:
+        await channel.purge(limit=10)
+    except AttributeError as e:
+        print(e)
 
     # DELETE AND CREATE ROLE CHANNEL MESSAGE
     role_list = ""

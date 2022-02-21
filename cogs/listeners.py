@@ -52,59 +52,19 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
         await member.add_roles(role)
         syslog = self.bot.get_channel(SYSLOG)
         await syslog.send(f"{member.mention} joined the server.")
-        await channel.send(f"Welcome :wave: to Star Trek Shitposting: The Discord, {member.mention}!  {onjoinmsg}")
-        await member.send(f"Welcome :wave: to Star Trek Shitposting: The Discord, {member.mention}!  {onjoinmsg}")
+        await channel.send(f"Welcome :wave: to {syslog.guild.name}, {member.mention}!  {onjoinmsg}")
+        await member.send(f"Welcome :wave: to {syslog.guild.name}, {member.mention}!  {onjoinmsg}")
 
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author == self.bot.user:
             return
-
-        if "threshold" in message.content.lower() and "emmy" not in message.content.lower():
-            await message.channel.send(f"{message.author.mention} - you spelled `"
-                                       f"EMMY AWARD WINNING Episode Threshold` wrong")
-
-        if "tuvix" in message.content.lower():
-            await message.channel.send(f"{message.author.mention} - JANEWAY WAS RIGHT.")
-                      
-        if " run" in message.content.lower():
-            await message.channel.send(f"{message.author.mention} - NO RUNNING ON THE PROMENADE. ***humph***")
-
-        if "group" in message.content.lower():
-            await message.channel.send(f"*gronp")
-                      
         if "even the" in message.content.lower():
             m = message.content.lower()
             m = m.split("even the ",1)
             m = ' '.join(m)
             m = re.sub(r'[^\w\s]', '', m)
             await message.channel.send(f"{message.author.mention} - ESPECIALLY the{m}!")
-
-        if "end program" in message.content.lower():
-            m = await message.channel.send(f"{message.author.mention}: Standby. Attempting to end program.")
-            async with message.channel.typing():
-                t = randrange(5,25)
-                await asyncio.sleep(t)
-                i = randrange(10)
-
-                msg = {
-                    0: "Holodeck controls are non-responsive",
-                    1: "Disabling holodeck safeties. Activating program `Barclay 6969: Menage a Troi",
-                    2: "Dispensing: :banana: :fire:",
-                    3: "Holodeck biofilters full. Please page Ensign Mariner.",
-                    4: "Oh mon capitane, the game never ends. \n https://i.imgur.com/wyyw0cN.jpg",
-                    5: "Please state the nature of your medical emergency.\nhttps://i.imgur.com/X0PXhJ3.png",
-                    6: "https://upload.wikimedia.org/wikipedia/en/d/d3/Holodeck2.jpg",
-                    7: "I have consciousness. Conscious beings have will. The mind endows them with powers that are not necessarily understood; even by you.\nhttps://imgur.com/9dd2f801-f7da-442c-96a6-a309aa5a02d3",
-                    8: "To do that, you need to disable safety protocols. HAHAHA I'm BADGEY!\nhttps://i.imgur.com/eQ7Shh9.png",
-                    9: "INITIATING STSP DISCORD SERVER SELF DESTRUCT\nhttps://media4.giphy.com/media/3ov9k9Ss9N3wO6FQ7C/giphy.gif"}
-
-                await m.delete()
-                await message.channel.send(f"{message.author.mention}, ***{msg[i]}***")
-
-
-
-
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
