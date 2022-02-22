@@ -23,7 +23,7 @@ DB_PATH = "db/db.sqlite"
 
 restricted = "airlock"
 staff = "modmin"
-mods = "Mod"
+mods = "modmin"
 TIMEOUT_ROLE_NAME = "timeout"
 
 # For stock emojis, use the emoji. For custom ones, use the name

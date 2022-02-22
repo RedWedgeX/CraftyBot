@@ -67,23 +67,53 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
             await message.channel.send(f"{message.author.mention} - ESPECIALLY the{m}!")
 
     @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload):
+        print(type(payload.member))
+        user = payload.member
+        channel = self.bot.get_channel(payload.channel_id)
+        message = await channel.fetch_message(payload.message_id)
+        new_member = message.author
+
+        wchan = self.bot.get_channel(WELCOMECHAN)
+
+        admin_role = discord.utils.get(channel.guild.roles, name=staff)
+        mod_role = discord.utils.get(channel.guild.roles, name=mods)
+
+        # handle mods using thumbs-up to welcome people
+        if payload.channel_id == WELCOMECHAN and \
+                (admin_role in user.roles or mod_role in user.roles):
+            role = discord.utils.get(user.guild.roles, name=restricted)
+            await new_member.remove_roles(role)
+            syslog = self.bot.get_channel(SYSLOG)
+
+            await syslog.send(f"{new_member.mention} welcomed to the server by `{user.display_name}`")
+            message = ("Thanks for introducing yourself. You now have full member access to our "
+                       f"channels. Stop by <#{ROLE_CHANNEL}> and self-assign some permissions!")
+            await wchan.send(f"{new_member.mention}, {message}")
+
+    @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
-        if user == self.bot.user: return
-        if reaction.message.channel.id != ROLE_CHANNEL: return
-        channel = self.bot.get_channel(ROLE_CHANNEL)
+        print(f"User: {user}")
+        if user == self.bot.user:
+            return
 
-        if hasattr(reaction.emoji, "name"):
-            react = reaction.emoji.name
-        else:
-            react = reaction.emoji
-        role = discord.utils.get(user.guild.roles, name=SELF_ASSIGN_ROLES[react])
-        await user.add_roles(role)
 
-        try:
-            await reaction.message.remove_reaction(react, user)
-        except HTTPException:
-            r = discord.utils.get(channel.guild.emojis, name=react)
-            await reaction.message.remove_reaction(r, user)
+        # handle role self-add reactions
+        if reaction.message.channel.id == ROLE_CHANNEL:
+            channel = self.bot.get_channel(ROLE_CHANNEL)
+
+            if hasattr(reaction.emoji, "name"):
+                react = reaction.emoji.name
+            else:
+                react = reaction.emoji
+            role = discord.utils.get(user.guild.roles, name=SELF_ASSIGN_ROLES[react])
+            await user.add_roles(role)
+
+            try:
+                await reaction.message.remove_reaction(react, user)
+            except HTTPException:
+                r = discord.utils.get(channel.guild.emojis, name=react)
+                await reaction.message.remove_reaction(r, user)
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
