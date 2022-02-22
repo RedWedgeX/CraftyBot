@@ -66,22 +66,40 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
             m = re.sub(r'[^\w\s]', '', m)
             await message.channel.send(f"{message.author.mention} - ESPECIALLY the{m}!")
 
+
+    @commands.Cog.listener()
+    async def on_reaction_remove(self, reaction, user):
+        print("REACTION REMOVE")
+        channel = self.bot.get_channel(ROLE_CHANNEL)
+        message = await channel.fetch_message(channel.last_message_id)
+
+        # handle role self-add reactions
+        if reaction.message.channel.id == ROLE_CHANNEL and reaction.message == message:
+            if hasattr(reaction.emoji, "name"):
+                react = reaction.emoji.name
+            else:
+                react = reaction.emoji
+            role = discord.utils.get(user.guild.roles, name=SELF_ASSIGN_ROLES[react])
+            await user.remove_roles(role)
+
+
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        print(type(payload.member))
-        user = payload.member
+        print("RAW REACTION ADD")
         channel = self.bot.get_channel(payload.channel_id)
+        user = payload.member
         message = await channel.fetch_message(payload.message_id)
-        new_member = message.author
-
-        wchan = self.bot.get_channel(WELCOMECHAN)
-
         admin_role = discord.utils.get(channel.guild.roles, name=staff)
         mod_role = discord.utils.get(channel.guild.roles, name=mods)
 
         # handle mods using thumbs-up to welcome people
         if payload.channel_id == WELCOMECHAN and \
                 (admin_role in user.roles or mod_role in user.roles):
+
+            new_member = message.author
+
+            wchan = self.bot.get_channel(WELCOMECHAN)
+
             role = discord.utils.get(user.guild.roles, name=restricted)
             await new_member.remove_roles(role)
             syslog = self.bot.get_channel(SYSLOG)
@@ -91,29 +109,33 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
                        f"channels. Stop by <#{ROLE_CHANNEL}> and self-assign some permissions!")
             await wchan.send(f"{new_member.mention}, {message}")
 
-    @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, user):
-        print(f"User: {user}")
-        if user == self.bot.user:
-            return
+        # handle self-assign role add
+        role_message = await channel.fetch_message(channel.last_message_id)
 
-
-        # handle role self-add reactions
-        if reaction.message.channel.id == ROLE_CHANNEL:
-            channel = self.bot.get_channel(ROLE_CHANNEL)
-
-            if hasattr(reaction.emoji, "name"):
-                react = reaction.emoji.name
+        if channel.id == ROLE_CHANNEL and message == role_message:
+            if hasattr(payload.emoji, "name"):
+                react = payload.emoji.name
             else:
-                react = reaction.emoji
+                react = payload.emoji
             role = discord.utils.get(user.guild.roles, name=SELF_ASSIGN_ROLES[react])
             await user.add_roles(role)
 
-            try:
-                await reaction.message.remove_reaction(react, user)
-            except HTTPException:
-                r = discord.utils.get(channel.guild.emojis, name=react)
-                await reaction.message.remove_reaction(r, user)
+    @commands.Cog.listener()
+    async def on_raw_reaction_remove(self, payload):
+        # Handle self-removing of roles
+        channel = self.bot.get_channel(payload.channel_id)
+        user = discord.utils.get(channel.guild.members, id=payload.user_id)
+        print(f"USER: {user}")
+        message = await channel.fetch_message(payload.message_id)
+        role_message = await channel.fetch_message(channel.last_message_id)
+
+        if channel.id == ROLE_CHANNEL and message == role_message:
+            if hasattr(payload.emoji, "name"):
+                react = payload.emoji.name
+            else:
+                react = payload.emoji
+            role = discord.utils.get(message.guild.roles, name=SELF_ASSIGN_ROLES[react])
+            await user.remove_roles(role)
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):

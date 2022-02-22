@@ -51,33 +51,6 @@ async def on_ready():
 
     print(f'\n\nLogged in as: {bot.user.name} - {bot.user.id}\nVersion: {discord.__version__}\n')
 
-    # Set up the reaction channel
-    channel = bot.get_channel(ROLE_CHANNEL)
-    try:
-        await channel.purge(limit=10)
-    except AttributeError as e:
-        print(e)
-
-    # DELETE AND CREATE ROLE CHANNEL MESSAGE
-    role_list = ""
-
-    for k, v in SELF_ASSIGN_ROLES.items():
-        role = discord.utils.get(channel.guild.emojis, name=k)
-        if role:
-            role_list += f"{role}: {v}\n"
-        else:
-            role_list += f"{k}: {v}\n"
-
-    role_message = f"{ROLES_CHANNEL_MESSAGE}\n{role_list}\n---------"
-    msg = await channel.send(role_message)
-
-    for k, v in SELF_ASSIGN_ROLES.items():
-        try:
-            await msg.add_reaction(k)
-        except HTTPException:
-            emoji = discord.utils.get(msg.guild.emojis, name=k)
-            await msg.add_reaction(emoji)
-    # await msg.add_reaction("🔴") TODO - activate this for remove-roles functionality
 
     # Changes our bots Playing Status. type=1(streaming) for a standard game you could remove type and url.
     await bot.change_presence(
