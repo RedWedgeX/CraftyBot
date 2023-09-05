@@ -13,6 +13,7 @@ from utils.config import ROLE_CHANNEL, ROLES_CHANNEL_MESSAGE, SELF_ASSIGN_ROLES
 intents = discord.Intents.default()
 intents.all()
 intents.members = True
+intents.message_content = True
 
 TOKEN = os.environ['TOKEN']
 
@@ -40,14 +41,14 @@ if __name__ == '__main__':
         try:
             print(f"loading extension {extension}")
             bot.load_extension(cogs_dir + "." + extension)
-        # except (discord.ClientException, commands.NoEntryPointError, ModuleNotFoundError):
+        # except (nextcord.ClientException, commands.NoEntryPointError, ModuleNotFoundError):
         except Exception as e:
             print(f'Failed to load extension {extension}: {e}.')
 
 
 @bot.event
 async def on_ready():
-    """http://discordpy.readthedocs.io/en/rewrite/api.html#discord.on_ready"""
+    """http://nextcordpy.readthedocs.io/en/rewrite/api.html#nextcord.on_ready"""
 
     print(f'\n\nLogged in as: {bot.user.name} - {bot.user.id}\nVersion: {discord.__version__}\n')
 
@@ -58,4 +59,4 @@ async def on_ready():
     print(f'Successfully logged in and booted...!')
 
 
-bot.run(TOKEN, bot=True, reconnect=True)
+bot.run(TOKEN, reconnect=True)

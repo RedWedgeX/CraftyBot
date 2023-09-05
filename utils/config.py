@@ -1,19 +1,19 @@
-# ----------- PROD GC SERVER ---------
-NOTES = 940626997011431444  # Admin notes channel - for logging role updates
-WELCOMECHAN = 945443742612062298  # channel for welcome messages.
-TIMEOUTCHAN = 945444169978093609  # timeout channel
-DELETEDMSGLOG = NOTES
-RULES = 904889634172051478
-ROLE_CHANNEL = 945445810882084874
-# --------------------------------------
-
-# ------------ REDWEDGE DEV TEST SERVER ---------
-# NOTES = 742465991057080400  # Admin notes channel - for logging role updates
-# WELCOMECHAN = 742465905434296422  # channel for welcome messages.
-# TIMEOUTCHAN = 742466193280991322 # timeout channel
+# # ----------- PROD GC SERVER ---------
+# NOTES = 940626997011431444  # Admin notes channel - for logging role updates
+# WELCOMECHAN = 945443742612062298  # channel for welcome messages.
+# TIMEOUTCHAN = 945444169978093609  # timeout channel
 # DELETEDMSGLOG = NOTES
-# RULES = 742472568531058739
-# ROLE_CHANNEL = 742841107590807575
+# RULES = 904889634172051478
+# ROLE_CHANNEL = 945445810882084874
+# # --------------------------------------
+#
+#------------ REDWEDGE DEV TEST SERVER ---------
+NOTES = 993271890116358194  # Admin notes channel - for logging role updates
+WELCOMECHAN = 993271888660938796  # channel for welcome messages.
+TIMEOUTCHAN = 993271889332015139 # timeout channel
+DELETEDMSGLOG = NOTES
+RULES = 993271888660938794
+ROLE_CHANNEL = 993271889101344879
 # ---------------------------------------------
 
 SYSLOG = NOTES
