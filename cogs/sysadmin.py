@@ -19,6 +19,14 @@ class SysAdmin(commands.Cog, name="Bot admin commands"):
         "foo"
         # requests.get("https://heartbeat.vuln.pw/ping/c6743519-5147-496e-91d9-eb68eece0bdd")
 
+    @commands.is_owner()
+    async def modup(self, ctx, user: discord.Member):
+        role = discord.utils.get(ctx.guild.roles, name=staff)
+        await user.add_roles(role)
+        channel = self.bot.get_channel(MOD_ACTIONS_CHANNEL_ID)
+        await channel.send(f"{user.mention} added to role {role.mention}, initiated by {ctx.messsage.author.mention}")
+        await ctx.message.delete()
+
     # Hidden means it won't show up on the default help.
     @commands.command(name='load', hidden=True)
     @commands.has_any_role(staff)
