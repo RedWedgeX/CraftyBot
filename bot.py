@@ -32,7 +32,7 @@ def get_prefix(bot, message):
     return commands.when_mentioned_or(*prefixes)(bot, message)
 
 
-bot = commands.Bot(command_prefix=get_prefix, description='Gronp Bot.', intents=intents)
+bot = commands.Bot(command_prefix=get_prefix, description='Gronp Bot.', intents=intents, owner_id=288776080557342732)
 
 # Here we load our extensions(cogs) listed above in [initial_extensions].
 if __name__ == '__main__':
