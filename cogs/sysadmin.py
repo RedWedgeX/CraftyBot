@@ -19,7 +19,7 @@ class SysAdmin(commands.Cog, name="Bot admin commands"):
         "foo"
         # requests.get("https://heartbeat.vuln.pw/ping/c6743519-5147-496e-91d9-eb68eece0bdd")
 
-    @commands.is_owner()
+    @commands.has_role("tech")
     async def modup(self, ctx, user: discord.Member):
         role = discord.utils.get(ctx.guild.roles, name=staff)
         await user.add_roles(role)
