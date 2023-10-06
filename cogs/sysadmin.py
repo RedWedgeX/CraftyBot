@@ -17,7 +17,7 @@ class SysAdmin(commands.Cog, name="Bot admin commands"):
     @tasks.loop(minutes=2)
     async def healthcheck(self):
         "foo"
-        # requests.get("https://heartbeat.vuln.pw/ping/c6743519-5147-496e-91d9-eb68eece0bdd")
+        requests.get("https://heartbeat.vuln.pw/ping/f3986a72-8b6f-4104-b2e0-7a1636971402")
 
     @commands.command()
     @commands.is_owner()
