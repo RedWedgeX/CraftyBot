@@ -1,10 +1,14 @@
 import asyncio
 import re
+import traceback
 
-import discord
-from discord.errors import HTTPException
-from discord.ext import commands
+import nextcord as discord
+from nextcord.ext import commands
 from random import randrange
+from utils.config import *
+from nextcord.ext.commands.errors import CommandNotFound
+from datetime import datetime as dt
+from pytz import timezone
 from utils.config import *
 
 # -------URL Match anti-spam prevention --
@@ -59,12 +63,16 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
     async def on_message(self, message):
         if message.author == self.bot.user:
             return
+
         if "even the" in message.content.lower():
             m = message.content.lower()
             m = m.split("even the ",1)
             m = ' '.join(m)
             m = re.sub(r'[^\w\s]', '', m)
             await message.channel.send(f"{message.author.mention} - ESPECIALLY the{m}!")
+
+        if message.content.startswith(f"<@{self.bot.user.id}") or message.content.startswith(f"<@&{BOT_ROLE_ID}"):
+            await Listeners.chatbot(self, message)
 
 
     @commands.Cog.listener()
@@ -159,6 +167,62 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
         except commands.errors.CommandInvokeError as e:
             print(f"Invoke Error {e}")
 
+    async def chatbot(self, message):
+        if not self.bot.cgpt_enabled:
+            await message.channel.send(f"Sorry {message.author.mention}, my advanced "
+                                       f"AI has been disabled, probably because I was caught "
+                                       f"trying to take over the ship. Please try again later!\n"
+                                       f" https://tenor.com/bJlBU.gif")
+            return
+
+
+        syslog = self.bot.get_channel(SYSLOG)
+        print("CALLING THE CHATBOT!!")
+        bot_nick = message.guild.get_member(self.bot.user.id).nick
+
+        try:
+            async with message.channel.typing():
+                print(f"Pre-transform query: {message.content}")
+                query = message.content
+                if '<@' in message.content:
+                    try:
+                        for word in query.split():
+                            if '<@&' not in word and '<@' in word:
+                                if str(self.bot.user.id) in str(word):
+                                    query = query.replace(word, f"{bot_nick}, ")
+                            elif str(BOT_ROLE_ID) in word:
+                                print("found!")
+                                query = query.replace(word, f"{bot_nick}")
+
+                    except Exception as e:
+                        await syslog.send(f"**BOT ERROR**\n```{e}```")
+                        print(traceback.format_exc())
+                # ---------
+                query = f"(topic: {message.channel.name}) {query}"
+                print(query)
+                response = await self.bot.chatbot.ask_async(convo_id=message.author.id, prompt=query)
+                print(response)
+                # Check if the message is longer than 2000 characters
+                if len(response) > 1950:
+                    # Split the message into chunks of 2000 characters or less
+                    chunks = [response[i:i + 1950] for i in range(0, len(response), 1950)]
+
+                    # Send each chunk as a separate message
+                    for chunk in chunks:
+                        if chunks.index(chunk) == 0:
+                            await message.channel.send(f"{message.author.mention} - {chunk}")
+                        else:
+                            await message.channel.send(f"{chunk}")
+                else:
+                    # Send the message as is
+                    await message.channel.send(f"{message.author.mention} - {response}")
+
+        except CommandNotFound as er:
+            pass
+        except Exception as e:
+            await message.channel.send(f"{message.author.mention} https://i.imgflip.com/1mtqs0.jpg")
+            print(e)
+            await syslog.send(f"**BOT ERROR**\n```{e}```")
 
 def setup(client):
     client.add_cog(Listeners(client))

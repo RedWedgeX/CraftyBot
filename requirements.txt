@@ -4,3 +4,6 @@ aiosqlite
 pynacl
 ffmpeg
 nextcord
+tiktoken
+revChatGPT
+
