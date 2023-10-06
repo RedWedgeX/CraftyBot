@@ -3,10 +3,11 @@
 import os
 from os import listdir
 from os.path import isfile, join
+import nextcord as discord
+from nextcord.ext import commands
+from revChatGPT.V3 import Chatbot
+from utils.config import CGPT_PROMPT
 
-import discord
-from discord.errors import HTTPException
-from discord.ext import commands
 
 from utils.config import ROLE_CHANNEL, ROLES_CHANNEL_MESSAGE, SELF_ASSIGN_ROLES
 
@@ -56,6 +57,8 @@ async def on_ready():
     # Changes our bots Playing Status. type=1(streaming) for a standard game you could remove type and url.
     await bot.change_presence(
         activity=discord.Streaming(name='Dom Jot', url='https://www.facebook.com/groups/1477972915840370'))
+    bot.chatbot = Chatbot(api_key=os.environ['CHATGPT_API'], system_prompt=CGPT_PROMPT, engine="gpt-4")
+    bot.cgpt_enabled = True
     print(f'Successfully logged in and booted...!')
 
 
