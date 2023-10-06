@@ -1,9 +1,10 @@
 import asyncio
 from datetime import datetime
-
 import aiosqlite
 import discord
 from discord.ext import tasks, commands
+import socket
+import urllib.request
 
 from utils.config import *
 
@@ -12,9 +13,20 @@ class Tasks(commands.Cog, name="Automatic Tasks"):
     def __init__(self, client):
         self.bot = client
         self.check_timeouts.start()
+        self.healthcheck.start()
 
     def cog_unload(self):
         self.check_timeouts.cancel()
+        self.healthcheck.cancel()
+
+    @tasks.loop(minutes=2)
+    async def healthcheck(self):
+        modlog_channel = self.bot.get_channel(SYSLOG)
+        try:
+            urllib.request.urlopen("https://heartbeat.vuln.pw/ping/f3986a72-8b6f-4104-b2e0-7a1636971402", timeout=10)
+        except socket.error as e:
+            # Log ping failure here...
+            await modlog_channel.send("Heartbeat Ping failed: %s" % e)
 
     @tasks.loop(minutes=5)
     async def check_timeouts(self):

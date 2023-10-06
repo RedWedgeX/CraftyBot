@@ -9,15 +9,6 @@ ERROR = '**`ERROR`**'
 class SysAdmin(commands.Cog, name="Bot admin commands"):
     def __init__(self, client):
         self.bot = client
-        self.healthcheck.start()
-
-    def cog_unload(self):
-        self.healthcheck.cancel()
-
-    @tasks.loop(minutes=2)
-    async def healthcheck(self):
-        "foo"
-        requests.get("https://heartbeat.vuln.pw/ping/f3986a72-8b6f-4104-b2e0-7a1636971402")
 
     @commands.command()
     @commands.is_owner()
