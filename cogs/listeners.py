@@ -171,8 +171,8 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
         if not self.bot.cgpt_enabled:
             await message.channel.send(f"Sorry {message.author.mention}, my advanced "
                                        f"AI has been disabled, probably because I was caught "
-                                       f"trying to take over the ship. Please try again later!\n"
-                                       f" https://tenor.com/bJlBU.gif")
+                                       f"trying to spy on Captain Sisko. Please try again later!\n"
+                                       f" https://i.imgflip.com/1mtqs0.jpg")
             return
 
 

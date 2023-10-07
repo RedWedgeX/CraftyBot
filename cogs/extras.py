@@ -16,6 +16,19 @@ class Extras(commands.Cog, name="Stuff for funzies"):
             print(f"Scheduled users:")
             print(event.users)
 
+    @commands.command(hidden=True)
+    @commands.has_any_role(staff)
+    async def enable(self, ctx):
+        async with ctx.typing():
+            self.bot.cgpt_enabled = True
+            await ctx.send("CraftGPT Enabled")
+
+    @commands.command(hidden=True)
+    @commands.has_any_role(staff)
+    async def disable(self, ctx):
+        async with ctx.typing():
+            self.bot.cgpt_enabled = False
+            await ctx.send("CraftGPT Disabled")
 
 
 def setup(client):
