@@ -177,8 +177,8 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
 
 
         syslog = self.bot.get_channel(SYSLOG)
-        print("CALLING THE CHATBOT!!")
-        bot_nick = message.guild.get_member(self.bot.user.id).nick
+        bot_nick = message.guild.get_member(self.bot.user.id).display_name
+        print(f"{bot_nick} CALLING THE CHATBOT!!")
 
         try:
             async with message.channel.typing():
@@ -189,7 +189,7 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
                         for word in query.split():
                             if '<@&' not in word and '<@' in word:
                                 if str(self.bot.user.id) in str(word):
-                                    query = query.replace(word, f"{bot_nick}, ")
+                                    query = query.replace(word, f"{bot_nick}")
                             elif str(BOT_ROLE_ID) in word:
                                 print("found!")
                                 query = query.replace(word, f"{bot_nick}")
