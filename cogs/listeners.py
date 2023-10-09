@@ -183,10 +183,12 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
                 if '<@' in query:
                     try:
                         for word in query.split():
-                            if '<@&' not in word and '<@' in word:
+                            # if ['<@&',  '<@'] in word:
+                            if any(i in word for i in  ['<@&',  '<@']):
+
                                 # if str(BOT_ROLE_ID) in word:  # handle if someone mentions him by role, not name
                                 #     query = query.replace(word, bot_nick)
-                                if str(self.bot.user.id) in str(word) or str(BOT_ROLE_ID):  # replace mentions with name
+                                if str(self.bot.user.id) in str(word) or str(BOT_ROLE_ID) in word:  # replace mentions with name
                                     query = query.replace(word, f"{bot_nick}")
                                 else:  # replace mentions of other users (or author) with display_name
                                     user_id = int(''.join(filter(str.isdigit, word)))
