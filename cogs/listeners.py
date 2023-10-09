@@ -66,14 +66,13 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
 
         if "even the" in message.content.lower():
             m = message.content.lower()
-            m = m.split("even the ",1)
+            m = m.split("even the ", 1)
             m = ' '.join(m)
             m = re.sub(r'[^\w\s]', '', m)
             await message.channel.send(f"{message.author.mention} - ESPECIALLY the{m}!")
 
         if message.content.startswith(f"<@{self.bot.user.id}") or message.content.startswith(f"<@&{BOT_ROLE_ID}"):
             await Listeners.chatbot(self, message)
-
 
     @commands.Cog.listener()
     async def on_reaction_remove(self, reaction, user):
@@ -90,7 +89,6 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
             role = discord.utils.get(user.guild.roles, name=SELF_ASSIGN_ROLES[react])
             await user.remove_roles(role)
 
-
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         print("RAW REACTION ADD")
@@ -103,7 +101,6 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
         # handle mods using thumbs-up to welcome people
         if payload.channel_id == WELCOMECHAN and \
                 (admin_role in user.roles or mod_role in user.roles):
-
             new_member = message.author
 
             wchan = self.bot.get_channel(WELCOMECHAN)
@@ -175,7 +172,6 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
                                        f" https://i.imgflip.com/1mtqs0.jpg")
             return
 
-
         syslog = self.bot.get_channel(SYSLOG)
         bot_nick = message.guild.get_member(self.bot.user.id).display_name
         print(f"{bot_nick} CALLING THE CHATBOT!!")
@@ -183,20 +179,20 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
         try:
             async with message.channel.typing():
                 print(f"Pre-transform query: {message.content}")
-                query = message.content
-                if '<@' in message.content:
+                query = message.content.split(' ', 1)[1]  # remove the first mention of Garak
+                if '<@' in query:
                     try:
                         for word in query.split():
                             if '<@&' not in word and '<@' in word:
-                                if str(self.bot.user.id) in str(word):
+                                # if str(BOT_ROLE_ID) in word:  # handle if someone mentions him by role, not name
+                                #     query = query.replace(word, bot_nick)
+                                if str(self.bot.user.id) in str(word) or str(BOT_ROLE_ID):  # replace mentions with name
                                     query = query.replace(word, f"{bot_nick}")
-                                else:
+                                else:  # replace mentions of other users (or author) with display_name
                                     user_id = int(''.join(filter(str.isdigit, word)))
                                     user_display_name = message.guild.get_member(user_id).dispaly_name
                                     query = query.replace(word, user_display_name)
-                            elif str(BOT_ROLE_ID) in word:
-                                print("found!")
-                                query = query.replace(word, f"{bot_nick}")
+
 
                     except Exception as e:
                         await syslog.send(f"**BOT ERROR**\n```{e}```")
@@ -227,6 +223,7 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
             await message.channel.send(f"{message.author.mention} https://i.imgflip.com/1mtqs0.jpg")
             print(e)
             await syslog.send(f"**BOT ERROR**\n```{e}```")
+
 
 def setup(client):
     client.add_cog(Listeners(client))
