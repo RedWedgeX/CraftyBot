@@ -190,6 +190,10 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
                             if '<@&' not in word and '<@' in word:
                                 if str(self.bot.user.id) in str(word):
                                     query = query.replace(word, f"{bot_nick}")
+                                else:
+                                    user_id = int(''.join(filter(str.isdigit, word)))
+                                    user_display_name = message.guild.get_member(user_id).dispaly_name
+                                    query = query.replace(word, user_display_name)
                             elif str(BOT_ROLE_ID) in word:
                                 print("found!")
                                 query = query.replace(word, f"{bot_nick}")
@@ -198,7 +202,7 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
                         await syslog.send(f"**BOT ERROR**\n```{e}```")
                         print(traceback.format_exc())
                 # ---------
-                query = f"(topic: {message.channel.name}) {query}"
+                query = f"(topic: {message.channel.name}) (my name: {message.author.id}) {query}"
                 print(query)
                 response = await self.bot.chatbot.ask_async(convo_id=message.author.id, prompt=query)
                 print(response)
