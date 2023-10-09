@@ -214,7 +214,7 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
                     # Send each chunk as a separate message
                     for chunk in chunks:
                         if chunks.index(chunk) == 0:
-                            await message.channel.send(f"{message.author.mention} - {chunk}")
+                            await message.channel.send(f"{chunk}")
                         else:
                             await message.channel.send(f"{chunk}")
                 else:
