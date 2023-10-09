@@ -219,7 +219,7 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
                             await message.channel.send(f"{chunk}")
                 else:
                     # Send the message as is
-                    await message.channel.send(f"{message.author.mention} - {response}")
+                    await message.channel.send(f"{response}")
 
         except CommandNotFound as er:
             pass
