@@ -197,7 +197,7 @@ class Listeners(commands.Cog, name="Shazbot Responders & Listeners"):
 
 
                     except Exception as e:
-                        await syslog.send(f"**BOT ERROR**\n```{e}```")
+                        await syslog.send(f"**BOT ERROR**\n`{e}`")
                         print(traceback.format_exc())
                 # ---------
                 query = f"(topic: {message.channel.name}) (my name: {message.author.id}) {query}"
